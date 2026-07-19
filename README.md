@@ -1,33 +1,28 @@
 # NLP-Driven Support Ticket Intelligence System
 
-An end-to-end analytics pipeline that turns raw support tickets into business intelligence — sentiment scoring, zero-shot category classification, and AI-generated complaint summaries, surfaced through a 3-page Power BI dashboard. Processes 70,000+ tickets end to end, no manual reprocessing after refresh.
+Turns 70,000+ raw support tickets into business intelligence — sentiment scoring, zero-shot category classification, and AI-generated complaint summaries, delivered through a 3-page Power BI dashboard.
 
-`Python` · `pandas` · `VADER` · `HuggingFace Inference API` · `SQLite` · `Power BI`
+<p>
+  <img src="https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/-Pandas-150458?style=flat-square&logo=pandas&logoColor=white"/>
+  <img src="https://img.shields.io/badge/-VADER-4B8BBE?style=flat-square"/>
+  <img src="https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black"/>
+  <img src="https://img.shields.io/badge/-SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/-Power%20BI-F2C811?style=flat-square&logo=powerbi&logoColor=black"/>
+</p>
 
 ---
 
 ## Architecture
 
-```
-Raw ticket CSV (70K+ records)
-        │
-        ▼
-Clean & engineer features  →  ticket_length, urgency_score, is_high_urgency
-        │
-        ▼
-VADER sentiment scoring     →  compound score + Positive/Neutral/Negative
-        │
-        ▼
-Zero-shot classification    →  bart-large-mnli predicts category, no training data
-        │
-        ▼
-Load into SQLite            →  5 business queries (window functions, CTEs)
-        │
-        ▼
-AI summarization            →  bart-large-cnn summarizes top negative tickets/category
-        │
-        ▼
-Power BI                    →  3-page dashboard, reads from exported CSVs
+```mermaid
+flowchart TD
+    A["Raw ticket CSV<br/>70K+ records"] --> B["Clean & engineer features<br/>ticket_length · urgency_score · is_high_urgency"]
+    B --> C["VADER sentiment scoring<br/>compound score + label"]
+    C --> D["Zero-shot classification<br/>bart-large-mnli"]
+    D --> E["SQLite<br/>5 business queries · window functions · CTEs"]
+    E --> F["AI summarization<br/>bart-large-cnn on top negative tickets"]
+    F --> G["Power BI<br/>3-page dashboard"]
 ```
 
 ---
@@ -40,14 +35,10 @@ Power BI                    →  3-page dashboard, reads from exported CSVs
 | VADER | Rule-based sentiment scoring — fast, explainable, no training |
 | HuggingFace `bart-large-mnli` | Zero-shot category classification |
 | HuggingFace `bart-large-cnn` | AI-generated complaint summaries |
-| SQLite | Local SQL layer — no server required |
+| SQLite | Local SQL layer, no server required |
 | Power BI | Executive overview, NLP deep dive, AI insights |
 
----
-
-## Dataset
-
-Customer Support Tickets (Bitext, via Kaggle) — 70,000+ records. Fully free: no paid APIs, no cloud infrastructure.
+**Dataset:** Customer Support Tickets (Bitext, via Kaggle) — 70,000+ records. Fully free: no paid APIs, no cloud infrastructure.
 
 ---
 
@@ -55,27 +46,30 @@ Customer Support Tickets (Bitext, via Kaggle) — 70,000+ records. Fully free: n
 
 | Stage | Description |
 |---|---|
-| **Raw** | Ticket text and metadata as downloaded |
-| **Cleaned** | Normalized text, parsed dates, engineered features |
-| **Enriched** | VADER sentiment + zero-shot predicted category |
-| **Insights** | SQL aggregations + AI summaries, exported for BI |
+| Raw | Ticket text and metadata as downloaded |
+| Cleaned | Normalized text, parsed dates, engineered features |
+| Enriched | VADER sentiment + zero-shot predicted category |
+| Insights | SQL aggregations + AI summaries, exported for BI |
 
 ---
 
 ## Key Insights
 
-- Billing tickets drive **38% of all negative sentiment** despite only 22% of volume
-- Billing shows **~2.4x higher negative sentiment** than technical tickets — a pricing/transparency issue, not a reliability one
-- Mismatch analysis surfaces **hidden dissatisfaction**: 4-5 star ratings paired with negative-sentiment text
-- Findings are framed as recommendations (e.g. a dedicated billing resolution workflow), not just observations
+> **Billing is the top complaint driver** — 38% of all negative sentiment from just 22% of ticket volume, at ~2.4x the negative rate of technical tickets. A pricing/transparency problem, not a reliability one.
+
+> **Hidden dissatisfaction** — mismatch analysis surfaces 4–5 star ratings paired with negative-sentiment text, tickets a star rating alone would miss.
+
+Findings are framed as recommendations (e.g. a dedicated billing resolution workflow), not just observations.
 
 ---
 
 ## Dashboard
 
-1. **Executive Overview** — KPI cards, monthly volume trend, sentiment split, volume by category
-2. **NLP Deep Dive** — sentiment by category, urgency heatmap, top keywords, ticket length vs. sentiment
-3. **AI Insights** — HuggingFace-generated complaint summary per category, paired with its sentiment score
+| Page | Contents |
+|---|---|
+| Executive Overview | KPI cards, monthly volume trend, sentiment split, volume by category |
+| NLP Deep Dive | Sentiment by category, urgency heatmap, top keywords, ticket length vs. sentiment |
+| AI Insights | HuggingFace-generated complaint summary per category, paired with its sentiment score |
 
 ---
 
@@ -99,13 +93,26 @@ Customer Support Tickets (Bitext, via Kaggle) — 70,000+ records. Fully free: n
 
 ---
 
-## How to Run
+<details>
+<summary><b>How to Run</b></summary>
+
+<br>
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run notebooks in order: `01_eda` → `02_cleaning_features` → `03_sentiment_nlp` → `04_classification` → `05_sql_analysis` → `06_ai_summaries`. Then open the Power BI file and refresh against `/outputs`.
+Run notebooks in order:
+`01_eda` → `02_cleaning_features` → `03_sentiment_nlp` → `04_classification` → `05_sql_analysis` → `06_ai_summaries`
+
+Then open the Power BI file and refresh against `/outputs`.
+
+</details>
+
+<details>
+<summary><b>Folder Structure</b></summary>
+
+<br>
 
 ```
 ├── data/raw/
@@ -116,3 +123,5 @@ Run notebooks in order: `01_eda` → `02_cleaning_features` → `03_sentiment_nl
 ├── outputs/
 └── screenshots/
 ```
+
+</details>
